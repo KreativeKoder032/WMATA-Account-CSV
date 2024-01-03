@@ -13,3 +13,4 @@ What this script does is:
 1. Has the user enter the Username and Password
 2. Uses the python Selenium module (https://pypi.org/project/selenium/) to login and go under the individual cards to gather the information. The script gathers: The Card Name, The Card Number, The Card Status, The Card Expiration Date, and The Card Value.
 3. Creates a ".csv" file with the name of the account and the current date and time in its name that contains the gathered information.
+4. Stores the ".csv" file in a subfolder called "Downloaded_CSVs"
