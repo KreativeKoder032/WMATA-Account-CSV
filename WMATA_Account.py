@@ -8,26 +8,28 @@ import numpy
 
 
 class WMATA_Account:
-    def __init__(self, username="",password="", visible = False, login_url = "https://smartrip.wmata.com/Account/Login", account_url = "https://smartrip.wmata.com/Account/Summary", user_box = 'UserName', pass_box = 'Password', login_button = 'log_in', card_class = "cardInfo", number_class = "card-number", card_details_xpath = "//div[@class='col-md-16 col-xs-24 info-value']", status_xpath = "//div[@class='col-md-16 col-xs-24 info-value ']", value_xpath = "//div[@class='col-lg-7 col-md-12 col-xs-11 xs-text-right']", card_name = "Card Name", card_number = "Number", card_status = "Status", card_date = "Expiration Date", card_value = "Value", WMATA_browser = None):
+    def __init__(self, username="",password="", visible = False, login_url = "https://smartrip.wmata.com/Account/Login", account_url = "https://smartrip.wmata.com/Account/Summary", user_box = 'UserName', pass_box = 'Password', login_button = 'log_in', card_class = "cardInfo", number_class = "card-number", card_details_xpath = "//div[@class='col-md-16 col-xs-24 info-value']", status_xpath = "//div[@class='col-md-16 col-xs-24 info-value ']", value_xpath = "//div[@class='col-lg-7 col-md-12 col-xs-11 xs-text-right']", pending_value_xpath = "//div[@class='col-sm-push-4 col-sm-3 col-xs-6 text-right sm-bold']", card_name = "Card Name", card_number = "Number", card_status = "Status", card_date = "Expiration Date", card_value = "Value", card_pending_value = "Pending Value", WMATA_browser = None):
 
-        #sets the different lists which will contain the out put data for the xml file
+        #sets the different lists which will contain the out put data for the CSV file
         self._card_name_list = []
         self._card_number_list = []
         self._card_status_list = []
         self._card_date_list = []
-        self._card_value_list = []        
+        self._card_value_list = []
+        self._card_pending_value_list = []
         
-        #sets the names of the columns in the xml file
+        #sets the names of the columns in the CSV file
         self._card_name = card_name
         self._card_number = card_number
         self._card_status =  card_status
         self._card_date = card_date
         self._card_value = card_value
+        self._card_pending_value = card_pending_value
 
-        #sets the username for the WMATA account to "" so that _enter_Username will be called
+        #sets the username for the WMATA account to "" by default so that _enter_Username will be called
         self._username = username
         
-        #sets the password for the WMATA account to "" so that _enter_Password will be called
+        #sets the password for the WMATA account to "" by default so that _enter_Password will be called
         self._password = password
         
         #this url is set by default to the login url of WMATA as of 12/22/2023
@@ -69,7 +71,11 @@ class WMATA_Account:
         #this is the HTML XPATH for the value of the card on the WMATA individual card page as of 12/27/2023
               #to update this, change the input above to the new value XPATH
         self._value_xpath = value_xpath
-        
+             
+        #this is the HTML XPATH for the pending value of the card on the WMATA individual card page as of 12/27/2023
+              #to update this, change the input above to the new pending value XPATH        
+        self._pending_value_xpath = pending_value_xpath
+    
         self._percentage_complete = 0
         
         self._total_time = 0
@@ -197,7 +203,14 @@ class WMATA_Account:
             #finds the value of the metro card on the metro card page
             tmp_data = self._WMATA_browser.find_element(By.XPATH, self._value_xpath)
             self._card_value_list.append(tmp_data.text)
-            
+               
+            #finds the pending value (if any) of the metro card on the metro card page
+            try:
+                tmp_data = self._WMATA_browser.find_element(By.XPATH, self._pending_value_xpath)
+                self._card_pending_value_list.append(tmp_data.text)
+            except:
+                self._card_pending_value_list.append("$0.00")
+          
             #returns back to the WMATA account page
             self._WMATA_browser.get(self._account_url)
             while self._WMATA_browser.current_url != self._account_url:
@@ -214,11 +227,11 @@ class WMATA_Account:
     def _build_CSV(self):
 
         file_name = "WMATA_Account_{0}_{1}.csv".format(self._username, strftime("%Y-%m-%d_%H%M%S", gmtime())) 
+      
+        fields = [self._card_name, self._card_number, self._card_status, self._card_date, self._card_value, self._card_pending_value]
         
-        fields = [self._card_name, self._card_number, self._card_status, self._card_date, self._card_value]
-        
-        rows = numpy.array([self._card_name_list, self._card_number_list, self._card_status_list, self._card_date_list, self._card_value_list])
-        
+        rows = numpy.array([self._card_name_list, self._card_number_list, self._card_status_list, self._card_date_list, self._card_value_list, self._card_pending_value_list])
+ 
         with open(file_name, 'w', newline='') as WMATA_csvfile:
             
             WMATA_csvwriter = csv.writer(WMATA_csvfile)
