@@ -71,11 +71,11 @@ class WMATA_Account:
         #this is the HTML XPATH for the value of the card on the WMATA individual card page as of 12/27/2023
               #to update this, change the input above to the new value XPATH
         self._value_xpath = value_xpath
-             
+        
         #this is the HTML XPATH for the pending value of the card on the WMATA individual card page as of 12/27/2023
               #to update this, change the input above to the new pending value XPATH        
         self._pending_value_xpath = pending_value_xpath
-    
+        
         self._percentage_complete = 0
         
         self._total_time = 0
@@ -203,14 +203,14 @@ class WMATA_Account:
             #finds the value of the metro card on the metro card page
             tmp_data = self._WMATA_browser.find_element(By.XPATH, self._value_xpath)
             self._card_value_list.append(tmp_data.text)
-               
+
             #finds the pending value (if any) of the metro card on the metro card page
             try:
                 tmp_data = self._WMATA_browser.find_element(By.XPATH, self._pending_value_xpath)
                 self._card_pending_value_list.append(tmp_data.text)
             except:
                 self._card_pending_value_list.append("$0.00")
-          
+
             #returns back to the WMATA account page
             self._WMATA_browser.get(self._account_url)
             while self._WMATA_browser.current_url != self._account_url:
