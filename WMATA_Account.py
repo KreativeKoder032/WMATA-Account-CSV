@@ -26,10 +26,10 @@ class WMATA_Account:
         self._card_value = card_value
         self._card_pending_value = card_pending_value
 
-        #sets the username for the WMATA account to "" so that _enter_Username will be called
+        #sets the username for the WMATA account to "" by default so that _enter_Username will be called
         self._username = username
         
-        #sets the password for the WMATA account to "" so that _enter_Password will be called
+        #sets the password for the WMATA account to "" by default so that _enter_Password will be called
         self._password = password
         
         #this url is set by default to the login url of WMATA as of 12/22/2023
@@ -203,14 +203,14 @@ class WMATA_Account:
             #finds the value of the metro card on the metro card page
             tmp_data = self._WMATA_browser.find_element(By.XPATH, self._value_xpath)
             self._card_value_list.append(tmp_data.text)
-            
+
             #finds the pending value (if any) of the metro card on the metro card page
             try:
                 tmp_data = self._WMATA_browser.find_element(By.XPATH, self._pending_value_xpath)
                 self._card_pending_value_list.append(tmp_data.text)
             except:
                 self._card_pending_value_list.append("$0.00")
-                
+
             #returns back to the WMATA account page
             self._WMATA_browser.get(self._account_url)
             while self._WMATA_browser.current_url != self._account_url:
@@ -227,11 +227,11 @@ class WMATA_Account:
     def _build_CSV(self):
 
         file_name = "WMATA_Account_{0}_{1}.csv".format(self._username, strftime("%Y-%m-%d_%H%M%S", gmtime())) 
-         
+      
         fields = [self._card_name, self._card_number, self._card_status, self._card_date, self._card_value, self._card_pending_value]
         
         rows = numpy.array([self._card_name_list, self._card_number_list, self._card_status_list, self._card_date_list, self._card_value_list, self._card_pending_value_list])
-      
+ 
         with open(file_name, 'w', newline='') as WMATA_csvfile:
             
             WMATA_csvwriter = csv.writer(WMATA_csvfile)
