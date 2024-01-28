@@ -1,4 +1,4 @@
-# WMATA_Account_CSV
+# WMATA-Account-CSV
 Creates a CSV file of WMATA Metro information associated with cards on a single WMATA account after logging in.
 
 **Currently Only Works for Windows Devices!!!**
